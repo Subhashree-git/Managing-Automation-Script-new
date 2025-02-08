@@ -58,7 +58,7 @@ public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
 	    // You can pass the browser name directly or ask the user to input it
-        String browser = "chrome"; // Set this to "chrome", "firefox", or "edge" for testing
+        String browser = "edge"; // Set this to "chrome", "firefox", or "edge" for testing
 
        // Create an instance of loginBrowser
        loginBrowser browserFactory = new loginBrowser();
