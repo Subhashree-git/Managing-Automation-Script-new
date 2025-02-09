@@ -53,56 +53,42 @@ public class loginBrowser {
 
         return driver;
     }
+    
+    // Method to perform login action
+    public void login(WebDriver driver) {
+        driver.get("http://8.217.119.29:8069/odoo/contacts/new");
+
+        // Print a message
+        System.out.println("Application Opened");
+        driver.findElement(By.xpath("//a[@href='/odoo?db=Peckochina_v18_testing']")).click();
+
+        // Wait for the login fields to be visible
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+        WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='login']")));
+        WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='password']")));
+        WebElement loginButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Log in']")));
+
+        // Enter credentials
+        usernameField.sendKeys("admin");
+        passwordField.sendKeys("@dminstage");
+        loginButton.click();
+
+        System.out.println("Login successful");
+    }
+    
 
 public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-	    // You can pass the browser name directly or ask the user to input it
-        String browser = "chrome"; // Set this to "chrome", "firefox", or "edge" for testing
+	    loginBrowser test = new loginBrowser();
+        WebDriver driver = test.getDriver("chrome");
+        test.login(driver);
+        
+    }    
+	
+	
 
-       // Create an instance of loginBrowser
-       loginBrowser browserFactory = new loginBrowser();
-    
-       // Get the WebDriver based on the browser
-       WebDriver driver = browserFactory.getDriver(browser);
-
-       // Perform login actions here
-       driver.get("http://8.217.119.29:8069/odoo/contacts/new");
-       
-       // Print a message
-       System.out.println("Application Opened");
-       
-       driver.findElement(By.xpath("//a[@href='/odoo?db=Peckochina_v18_testing']")).click();
-      	    
-            // Wait for the login fields to be visible
-           WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); 
-           
-           WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='login']")));// Replace with actual element ID
-           WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='password']")));// Replace with actual element ID
-           WebElement loginButton = driver.findElement(By.xpath("//button[text()='Log in']"));  // Replace with actual XPath if necessary
-
-            // Enter credentials
-            usernameField.sendKeys("admin");
-            passwordField.sendKeys("@dminstage");
-
-            // Click the login button
-            loginButton.click();
-
-            // Wait for successful login (You can wait for an element that indicates successful login)
-            //WebElement postLoginElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Dashboard']")));  // Example post-login check
-            System.out.println("Login successful");
-
-      
-            // Close the browser
-            driver.quit();
-        }
-    }
-
-		
-		
-		
-		
-		
+}
+			
 	
 
 

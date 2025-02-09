@@ -16,42 +16,14 @@ public class productCreation {
 
 	public static void main(String[] args) throws InterruptedException {
 		// TODO Auto-generated method stub
-        
-		// Create an instance of loginBrowser
-        loginBrowser browserFactory = new loginBrowser();
-        
-        // Set the browser you want to use (can be passed dynamically as needed)
-        String browser = "chrome"; // You can change this to "firefox" or "edge" as well
-        
-        // Get the WebDriver for the selected browser
-        WebDriver driver = browserFactory.getDriver(browser);
-     // Perform login actions here
-        driver.get("http://8.217.119.29:8069/odoo/contacts/new");
-        
-        // Print a message
-        System.out.println("Application Opened");
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//a[@href='/odoo?db=Peckochina_v18_testing']")).click();
-               	    
-        // Wait for the login fields to be visible
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40)); 
-        //Thread.sleep(2000);
-            
-        WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='login']")));// Replace with actual element ID
-        WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='password']")));// Replace with actual element ID
-        WebElement loginButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Log in']")));  // Replace with actual XPath if necessary
+		loginBrowser test = new loginBrowser();
+        WebDriver driver = test.getDriver("chrome");
+        test.login(driver);
 
-        // Enter credentials
-        usernameField.sendKeys("admin");
-        passwordField.sendKeys("@dminstage");
-        // Click the login button
-         loginButton.click();
-         System.out.println("Login successful");
-		
-         
          //product creation
+         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40)); 
          WebElement Salesmodule = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[./div[text()='Sales']]"))); 
-   	    Salesmodule.click(); 
+   	     Salesmodule.click(); 
    	      
    	     WebElement product_menu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@data-section='203' and text()='Products']")));
    	     product_menu.click();
