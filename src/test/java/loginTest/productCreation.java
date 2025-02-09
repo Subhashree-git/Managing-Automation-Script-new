@@ -1,6 +1,7 @@
 package loginTest;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -63,8 +64,8 @@ public class productCreation {
    	     New.click();
    	     
    	     Thread.sleep(1000);
-   	  WebElement Data1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
-      Data1.sendKeys("spare parts");
+   	  WebElement product_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
+      product_name.sendKeys("Apple iPhone 15");
 	     
    // Wait for Sales checkbox and check its state
       WebElement saleCheckbox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sale_ok_0")));
@@ -129,7 +130,7 @@ public class productCreation {
       productCategory_selection.click();
       
       WebElement reference = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='default_code_0']")));
-      reference.sendKeys("REF123");
+      reference.sendKeys("REF101");
       
       WebElement description = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='x_studio_field_mHzKJ_0']")));
       description.sendKeys("Test Product Description");
@@ -142,22 +143,49 @@ public class productCreation {
       WebElement Manufacturer_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='ABB Controls Inc']")));
       Manufacturer_selection.click();
       
+      //purchase tab
+      WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(40));
+      WebElement purchase_tab = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='purchase']")));
+      purchase_tab.click();
+      WebElement addLine = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Add a line']")));
+      addLine.click();
+      WebElement sequence = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='sequence' and contains(@class, 'o_field_widget') and contains(@class, 'o_field_False')]/input[@inputmode='numeric' and @class='o_input' and @autocomplete='off' and @type='text']")));
+      sequence.clear();
+      sequence.sendKeys("01");
+      
+      WebElement vendor = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='partner_id']")));
+      vendor.click();
+      WebElement vendor_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='AOQI MULTIMEDIA SDN BHD']")));
+      vendor_selection.click();
+      
+      WebElement quantity = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='min_qty']/div[@name='min_qty']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
+      quantity.clear();
+      quantity.sendKeys("0");
+      
+      WebElement price = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='price' and @class='o_field_widget o_required_modifier o_field_float']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
+      price.clear();
+      price.sendKeys("25");
+      
+      WebElement currency = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='currency_id']//div[@class='o_field_widget o_required_modifier o_field_many2one']//div[@class='o_field_many2one_selection']//div[@class='o_input_dropdown']//div[@class='o-autocomplete dropdown']/input[@class='o-autocomplete--input o_input pe-3' and @type='text' and @aria-expanded='false']")));
+      currency.click();
+      WebElement currency_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@id='autocomplete_0_2' and text()='USD']")));
+      currency_selection.click();
+      
+      //inventory tab
+      WebElement inventory = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='inventory' and text()='Inventory']")));
+      inventory.click();
+      Thread.sleep(2000);
+      // Call the route function for both checkboxes
+      selectCheckboxByLabel(driver, "PKS - Buy from Vendor");
+     //selectCheckboxByLabel(driver, "Manufacture in PKS");
+      
       //Save the product 
       WebElement save_product = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@aria-label='Save manually']")));
       save_product.click();
    
+  
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-         
-       	}
+   	}
 
 
 
@@ -178,6 +206,16 @@ public static void verifyRadioButtonSelection(WebDriver driver, String option) {
         System.out.println(option + " radio button is not selected");
     }
 }
+
+//Function to select a Route checkbox based on label text
+public static void selectCheckboxByLabel(WebDriver driver, String labelText) {
+ WebElement checkbox = driver.findElement(By.xpath("//label[text()='" + labelText + "']/preceding-sibling::input[@type='checkbox']"));
+ if (!checkbox.isSelected()) {
+     checkbox.click();  // Select the checkbox if it's not already selected
+ }
+}
+
+
 
 }
 
