@@ -58,7 +58,7 @@ public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
 	    // You can pass the browser name directly or ask the user to input it
-        String browser = "edge"; // Set this to "chrome", "firefox", or "edge" for testing
+        String browser = "chrome"; // Set this to "chrome", "firefox", or "edge" for testing
 
        // Create an instance of loginBrowser
        loginBrowser browserFactory = new loginBrowser();
@@ -70,16 +70,16 @@ public static void main(String[] args) {
        driver.get("http://8.217.119.29:8069/odoo/contacts/new");
        
        // Print a message
-       System.out.println("Odoo Runbot v18 Opened");
+       System.out.println("Application Opened");
        
        driver.findElement(By.xpath("//a[@href='/odoo?db=Peckochina_v18_testing']")).click();
       	    
             // Wait for the login fields to be visible
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); 
+           WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); 
            
-            WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='login']")));// Replace with actual element ID
-            WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='password']")));// Replace with actual element ID
-            WebElement loginButton = driver.findElement(By.xpath("//button[text()='Log in']"));  // Replace with actual XPath if necessary
+           WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='login']")));// Replace with actual element ID
+           WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='password']")));// Replace with actual element ID
+           WebElement loginButton = driver.findElement(By.xpath("//button[text()='Log in']"));  // Replace with actual XPath if necessary
 
             // Enter credentials
             usernameField.sendKeys("admin");
