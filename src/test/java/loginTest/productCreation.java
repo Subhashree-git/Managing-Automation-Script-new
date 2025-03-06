@@ -37,7 +37,7 @@ public class productCreation {
    	     
    	     Thread.sleep(1000);
    	  WebElement product_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
-      product_name.sendKeys("Apple iPhone 15");
+      product_name.sendKeys("Product#23");
 	     
    // Wait for Sales checkbox and check its state
       WebElement saleCheckbox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sale_ok_0")));
@@ -52,7 +52,11 @@ public class productCreation {
       selectRadioButton(driver, "consu");  // Example: Select "consu", "services", "combo"
    // Optionally, verify the selection of Product type
       verifyRadioButtonSelection(driver, "consu");
-
+      
+   // enabling TRack Inventory
+      WebElement inventory_track = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//div[@class='o-checkbox form-check d-inline-block'])[3]")));
+      inventory_track.click();
+  
    // Locate the dropdown by ID for  Invisible policy
       WebElement dropdown = driver.findElement(By.id("invoice_policy_0"));
    // Create a Select object to interact with the dropdown
@@ -98,11 +102,11 @@ public class productCreation {
       WebElement productCategory = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='categ_id_0']")));
       productCategory.sendKeys(Keys.BACK_SPACE);
       productCategory.click();
-      WebElement productCategory_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"categ_id_0_0_1\"]")));
+      WebElement productCategory_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='All / Saleable / Adhesive UOM in grm']")));
       productCategory_selection.click();
       
       WebElement reference = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='default_code_0']")));
-      reference.sendKeys("REF101");
+      reference.sendKeys("Product#23");
       
       WebElement description = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='x_studio_field_mHzKJ_0']")));
       description.sendKeys("Test Product Description");
@@ -127,6 +131,7 @@ public class productCreation {
       
       WebElement vendor = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='partner_id']")));
       vendor.click();
+      Thread.sleep(2000);
       WebElement vendor_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='AOQI MULTIMEDIA SDN BHD']")));
       vendor_selection.click();
       
@@ -140,7 +145,8 @@ public class productCreation {
       
       WebElement currency = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='currency_id']//div[@class='o_field_widget o_required_modifier o_field_many2one']//div[@class='o_field_many2one_selection']//div[@class='o_input_dropdown']//div[@class='o-autocomplete dropdown']/input[@class='o-autocomplete--input o_input pe-3' and @type='text' and @aria-expanded='false']")));
       currency.click();
-      WebElement currency_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@id='autocomplete_0_2' and text()='USD']")));
+      Thread.sleep(2000);
+      WebElement currency_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@id='autocomplete_0_4']")));
       currency_selection.click();
       
       //inventory tab
@@ -153,10 +159,9 @@ public class productCreation {
       
       //Save the product 
       WebElement save_product = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@aria-label='Save manually']")));
-      save_product.click();
+      save_product.click();   
+
    
-  
-      
    	}
 
 

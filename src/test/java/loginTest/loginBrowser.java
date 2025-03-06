@@ -60,7 +60,7 @@ public class loginBrowser {
 
         // Print a message
         System.out.println("Application Opened");
-        driver.findElement(By.xpath("//a[@href='/odoo?db=Peckochina_v18_testing']")).click();
+        driver.findElement(By.xpath("//a[@href='/odoo?db=QA']")).click();
 
         // Wait for the login fields to be visible
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
