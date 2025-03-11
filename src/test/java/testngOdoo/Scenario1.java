@@ -303,13 +303,13 @@ public class Scenario1 {
 	    }
 
 
-	/*	@AfterClass
+		@AfterClass
 	    public void tearDown() {
 	        if (driver != null) {
 	            driver.quit();
 	        }
 	    }
-*/		
+		
 		public static double calculatePOQuantity(double onHandQty, double maxQty, double salesOrderQty) {
 	        double poQty = 0.0;
 
