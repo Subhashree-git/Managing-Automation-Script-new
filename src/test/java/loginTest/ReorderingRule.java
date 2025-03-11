@@ -32,7 +32,7 @@ public class ReorderingRule {
    	     
    	     WebElement Product_search = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
          Product_search.click();
-         Product_search.sendKeys("Product1#23");
+         Product_search.sendKeys("Scenario1_test product");
          Product_search.sendKeys(Keys.ENTER);
          
          WebElement Product_select = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='Product1#23']")));

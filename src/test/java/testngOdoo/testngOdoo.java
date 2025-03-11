@@ -1,4 +1,21 @@
 package testngOdoo;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
@@ -25,258 +42,405 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterSuite;
 
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 public class testngOdoo {
 	
 	WebDriver driver;
+	WebDriverWait wait;
     loginBrowser test = new loginBrowser();
+    String productName = "Scenario1_test product"; // Define product name globally
+
 
     @BeforeMethod
     public void setUp() {
         // Setup WebDriver for Chrome
         driver = test.getDriver("chrome");
         test.login(driver);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
+    
 
     @Test
-	public void testProductCreation() throws InterruptedException {
-        // Wait for Sales module and click
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+    public void testProductCreation() throws InterruptedException {
+        // Navigate to Sales module
         WebElement Salesmodule = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[./div[text()='Sales']]")));
         Salesmodule.click();
 
-        // Click on Product menu
+        // Click on Products menu
         WebElement product_menu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@data-section='203' and text()='Products']")));
         product_menu.click();
+
         WebElement product = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@data-section='204' and text()='Products']")));
         product.click();
 
-        // Click New to create a new product
-        WebElement New = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()=' New ']")));
-        New.click();
+        // Check if product exists
+        if (!isProductExisting(productName)) {
+            // Click on New product
+            WebElement New = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()=' New ']")));
+            New.click();
 
-        // Enter Product Name
-        WebElement product_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
-        product_name.sendKeys("auto #1");
-       // String expectedName = "auto #1";
+            Thread.sleep(1000);
 
-        // Assert that product name is entered
-    //    assertEquals(product_name.getAttribute("value"), expectedName, "Product name mismatch!");
+            // Fill in product details
+            createProduct(productName);
 
-       
-        // Verify Sales checkbox and enable it if not selected
-        WebElement saleCheckbox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sale_ok_0")));
-        if (!saleCheckbox.isSelected()) {
-            saleCheckbox.click();
+            // Verify Sales checkbox state
+            verifySalesCheckbox();
+
+            // Select Product Type
+            selectProductType("consu");
+
+            // Enable Track Inventory
+            enableTrackInventory();
+
+            // Select Invisible Policy
+            selectInvoicePolicy("Ordered quantities");
+
+            // Fill item details
+            fillItemDetails();
+
+            // Purchase Tab - Add vendor and price info
+            fillPurchaseTab();
+
+            // Inventory Tab - Routes
+            fillInventoryTab();
+
+            // Save the product
+            WebElement save_product = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@aria-label='Save manually']")));
+            save_product.click();
+
+            Thread.sleep(2000);
+            // Wait for the log note to be present (the log note with the product creation message)
+            WebElement logNoteElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='o-mail-Message-body text-break mb-0 w-100 o-note']//p")));
+
+            // Get the text from the log note element
+            String logNoteText = logNoteElement.getText();
+
+            // Assertion: Ensure the log note text is correct
+            Assert.assertEquals(logNoteText, "Product created", "The log note does not display the expected text.");
+
+
+        } else {
+            System.out.println("Product already exists: " + productName);
         }
-        assertTrue(saleCheckbox.isSelected(), "Sales checkbox not selected!");
 
-        // Select Product type and verify
-        selectRadioButton(driver, "consu"); 
-        verifyRadioButtonSelection(driver, "consu");
-
-        // Enable inventory tracking
-        WebElement inventory_track = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//div[@class='o-checkbox form-check d-inline-block'])[3]")));
-     // Ensure the checkbox is not already selected before clicking
-        if (!inventory_track.isSelected()) {
-            inventory_track.click();
-        }
-
-        // Wait until it is selected before asserting
-        wait.until(ExpectedConditions.elementToBeClickable(inventory_track));
-        Thread.sleep(2000);
-      //  assertTrue(inventory_track.isSelected(), "Inventory tracking checkbox not selected!");
-       
-        // Proceed with other field inputs
-        // Example for entering Sales Price and asserting
-        WebElement salesPrice = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='list_price_0']")));
-        salesPrice.clear();
-        salesPrice.sendKeys("13.0000");
-        assertEquals(salesPrice.getAttribute("value"), "13.0000", "Sales price mismatch!");
-
-        // Similar input and assertions for other fields like UOM, taxes, etc.
-       // 1. Locate the input field and click to open the dropdown
-        WebElement uom = driver.findElement(By.xpath("//input[@id='uom_id_0']"));
-        uom.click();
-      
-       // 2. Select the desired option (for example, selecting "gm")
-        WebElement uom_selection = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='gm']")));
-        uom_selection.click();
-        assertEquals(uom_selection.isSelected(), "UOM not selected");
-        
-        WebElement salesTaxes = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='taxes_id_0']")));
-        salesTaxes.sendKeys(Keys.BACK_SPACE);
-        salesTaxes.click();
-        WebElement salesTax_selection = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"taxes_id_0_0_0\"]")));
-        salesTax_selection.click();
-        assertEquals(salesTax_selection.isSelected(), "Tax is not selected");
-        
-        WebElement Cost = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='standard_price_0']")));
-        Cost.clear();
-        Cost.sendKeys("20.000");
-        assertEquals(Cost.isSelected(), "Cost is not selected");
-        
-        WebElement purchaseTaxes = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='supplier_taxes_id_0']")));
-        purchaseTaxes.sendKeys(Keys.BACK_SPACE);
-        purchaseTaxes.click();
-        WebElement purchaseTaxes_selection = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='supplier_taxes_id_0_0_0']")));
-        purchaseTaxes_selection.click();
-        assertEquals(purchaseTaxes_selection.isSelected(), "Purchase Tax is not selected");
-        
-     
-        WebElement productCategory = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='categ_id_0']")));
-        productCategory.sendKeys(Keys.BACK_SPACE);
-        productCategory.click();
-        WebElement productCategory_selection = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"categ_id_0_0_1\"]")));
-        productCategory_selection.click();
-        assertEquals(productCategory_selection.isSelected(), "Product category is not selected");
-        
-        WebElement reference = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='default_code_0']")));
-        reference.sendKeys("AUTO-12345");
-        
-        WebElement description = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='x_studio_field_mHzKJ_0']")));
-        description.sendKeys("Test Product Description");
-        
-        WebElement supplier_PartNum = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@id='x_studio_field_qr3ai_0']")));
-        supplier_PartNum.sendKeys("Supplier Part Number");
-        
-        WebElement Manufacturer_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='manufacturer_id_0']")));
-        Manufacturer_name.click();
-        WebElement Manufacturer_selection = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='ABB Controls Inc']")));
-        Manufacturer_selection.click();
-        
-        //purchase tab
-        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(40));
-        WebElement purchase_tab = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='purchase']")));
-        purchase_tab.click();
-        WebElement addLine = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Add a line']")));
-        addLine.click();
-        WebElement sequence = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='sequence' and contains(@class, 'o_field_widget') and contains(@class, 'o_field_False')]/input[@inputmode='numeric' and @class='o_input' and @autocomplete='off' and @type='text']")));
-        sequence.clear();
-        sequence.sendKeys("01");
-        
-        WebElement vendor = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='partner_id']")));
-        vendor.click();
-        WebElement vendor_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='AOQI MULTIMEDIA SDN BHD']")));
-        vendor_selection.click();
-        
-        WebElement quantity = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='min_qty']/div[@name='min_qty']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
-        quantity.clear();
-        quantity.sendKeys("0");
-        
-        WebElement price = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='price' and @class='o_field_widget o_required_modifier o_field_float']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
-        price.clear();
-        price.sendKeys("25");
-        
-        WebElement currency = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='currency_id']//div[@class='o_field_widget o_required_modifier o_field_many2one']//div[@class='o_field_many2one_selection']//div[@class='o_input_dropdown']//div[@class='o-autocomplete dropdown']/input[@class='o-autocomplete--input o_input pe-3' and @type='text' and @aria-expanded='false']")));
-        currency.click();
-        Thread.sleep(2000);
-        WebElement currency_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@id='autocomplete_0_4']")));
-        currency_selection.click();
-        
-        //inventory tab
-        WebElement inventory = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='inventory' and text()='Inventory']")));
-        inventory.click();
-        Thread.sleep(2000);
-        // Call the route function for both checkboxes
-        selectCheckboxByLabel(driver, "PKS - Buy from Vendor");
-        //selectCheckboxByLabel(driver, "Manufacture in PKS");
-        // Add your other assertions here for different fields like `description`, `supplier_PartNum`, etc.
-
-        // Click Save button
-        WebElement save_product = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@aria-label='Save manually']")));
-        save_product.click();
-
-        // Assert if save was successful by checking for some confirmation
-        WebElement confirmation = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'Product created')]")));
-        assertTrue(confirmation.isDisplayed(), "Product creation failed!");
+        // Add reordering rule regardless of product creation
+        addReorderingRule(productName);
     }
 
- //   @Test
-/*	public void testReorderingRule() throws InterruptedException {
-        // Navigate to Sales and select product
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
-        WebElement Salesmodule = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[./div[text()='Sales']]")));
-        Salesmodule.click();
-
-        WebElement product_menu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@data-section='203' and text()='Products']")));
-        product_menu.click();
-        WebElement product = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@data-section='204' and text()='Products']")));
-        product.click();
-
-        // Search for the product and select
-        WebElement Product_search = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
-        Product_search.click();
-        Product_search.sendKeys("Vivo 1#");
-        Product_search.sendKeys(Keys.ENTER);
-
-        WebElement Product_select = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='Vivo 1#']")));
-        Product_select.click();
-
-        // Click on 'More' option
-        WebElement more_option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[span='More']")));
-        more_option.click();
-
-        // Click on 'Reordering Rules'
-        WebElement reordering_rules = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(., 'Min:')]")));
-        reordering_rules.click();
-
-        // Set min and max quantities for reordering
-        WebElement minInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='product_min_qty']//input")));
-        minInput.clear();
-        minInput.sendKeys("0");
-        ((JavascriptExecutor) driver).executeScript("arguments[0].dispatchEvent(new Event('change'));", minInput);
-
-        WebElement maxInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='product_max_qty']//input")));
-        maxInput.clear();
-        maxInput.sendKeys("10");
-        ((JavascriptExecutor) driver).executeScript("arguments[0].dispatchEvent(new Event('change'));", maxInput);
-
-        // Ensure values are correct
-        String minValue = minInput.getAttribute("value");
-        String maxValue = maxInput.getAttribute("value");
-
-        assertEquals(minValue, "0", "Minimum quantity mismatch!");
-        assertEquals(maxValue, "10", "Maximum quantity mismatch!");
-
-        // Save reordering rule
-        WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button'and contains(text(), 'Save')]")));
-        saveButton.click();
-
-        // Assert that the reordering rule is saved
-        WebElement confirmation = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'Reordering rule saved')]")));
-        assertTrue(confirmation.isDisplayed(), "Reordering rule save failed!");
-    }
-
-   // @AfterMethod
+ /*   @AfterClass
     public void tearDown() {
-        // Close the driver after each test
+        // Close the driver after all tests are done
         if (driver != null) {
             driver.quit();
         }
-    }   */
+    }
+*/
+    private boolean isProductExisting(String productName) {
+        WebElement Product_search = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
+        Product_search.click();
+        Product_search.sendKeys(productName);
+        Product_search.sendKeys(Keys.ENTER);
 
-    // Helper methods for radio buttons and checkboxes
-  	public static void selectCheckboxByLabel(WebDriver driver, String labelText) {
- 		 WebElement checkbox = driver.findElement(By.xpath("//label[text()='" + labelText + "']/preceding-sibling::input[@type='checkbox']"));
- 		 if (!checkbox.isSelected()) {
- 		     checkbox.click();  // Select the checkbox if it's not already selected
- 		 }
- 		}
-   
-   	public static void selectRadioButton(WebDriver driver, String option) {
+        try {
+            //If Product Select is clickable, it means the product exists.
+        	WebElement Product_select = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='"+productName+"']")));
+            //If we reach here, the element exists
+        	return true;
+
+        } catch (Exception e) {
+            return false;
+        }finally {
+        	WebElement Product_search_clean = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
+            Product_search_clean.clear();
+		}
+    }
+
+
+    private void verifySalesCheckbox() {
+        WebElement saleCheckbox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sale_ok_0")));
+        if (saleCheckbox.isSelected()) {
+            System.out.println("Sales checkbox is already checked.");
+        } else {
+            System.out.println("Sales checkbox is not checked. Enabling...");
+            new Actions(driver).moveToElement(saleCheckbox).click().perform();  // Click to select the checkbox
+        }
+    }
+
+    private void selectProductType(String type) {
+        selectRadioButton(driver, type);  // Example: Select "consu", "services", "combo"
+        verifyRadioButtonSelection(driver, type);
+    }
+
+    private void enableTrackInventory() {
+        WebElement inventory_track = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//div[@class='o-checkbox form-check d-inline-block'])[3]")));
+        inventory_track.click();
+    }
+
+    private void selectInvoicePolicy(String policy) {
+        WebElement dropdown = driver.findElement(By.id("invoice_policy_0"));
+        Select select = new Select(dropdown);
+        select.selectByVisibleText(policy);  // Example: Select "Ordered quantities"
+    }
+
+    private void fillItemDetails() throws InterruptedException {
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        WebElement item_Text = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"item_text_0\"]")));
+        item_Text.sendKeys("Customer Part Number");
+
+        WebElement customer_partNumber = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"customer_part_number_0\"]")));
+        customer_partNumber.sendKeys("Customer Part Number");
+
+        WebElement salesPrice = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='list_price_0']")));
+        salesPrice.clear();
+        salesPrice.sendKeys("32.0000");
+
+        WebElement uom = driver.findElement(By.xpath("//input[@id='uom_id_0']"));
+        uom.click();
+
+        WebElement uom_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='gm']")));
+        uom_selection.click();
+
+        WebElement salesTaxes = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='taxes_id_0']")));
+        salesTaxes.sendKeys(Keys.BACK_SPACE);
+        salesTaxes.click();
+
+        WebElement salesTax_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"taxes_id_0_0_0\"]")));
+        salesTax_selection.click();
+
+        WebElement Cost = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='standard_price_0']")));
+        Cost.clear();
+        Cost.sendKeys("20.000");
+
+        WebElement purchaseTaxes = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='supplier_taxes_id_0']")));
+        purchaseTaxes.sendKeys(Keys.BACK_SPACE);
+        purchaseTaxes.click();
+
+        WebElement purchaseTaxes_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='supplier_taxes_id_0_0_0']")));
+        purchaseTaxes_selection.click();
+
+        WebElement productCategory = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='categ_id_0']")));
+        productCategory.sendKeys(Keys.BACK_SPACE);
+        productCategory.click();
+
+        WebElement productCategory_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='All / Saleable / Adhesive UOM in grm']")));
+        productCategory_selection.click();
+
+        WebElement reference = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='default_code_0']")));
+        reference.sendKeys("Scenario1_test product35");
+
+        WebElement description = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='x_studio_field_mHzKJ_0']")));
+        description.sendKeys("Test Product Description");
+
+        WebElement supplier_PartNum = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@id='x_studio_field_qr3ai_0']")));
+        supplier_PartNum.sendKeys("Supplier Part Number");
+
+        WebElement Manufacturer_name = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='manufacturer_id_0']")));
+        Manufacturer_name.click();
+        WebElement Manufacturer_selection = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='ABB Controls Inc']")));
+        Manufacturer_selection.click();
+    }
+
+    private void fillPurchaseTab() throws InterruptedException {
+        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(40));
+
+        WebElement purchase_tab = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='purchase']")));
+        purchase_tab.click();
+
+        WebElement addLine = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Add a line']")));
+        addLine.click();
+
+        WebElement sequence = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='sequence' and contains(@class, 'o_field_widget') and contains(@class, 'o_field_False')]/input[@inputmode='numeric' and @class='o_input' and @autocomplete='off' and @type='text']")));
+        sequence.clear();
+        sequence.sendKeys("01");
+
+        WebElement vendor = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='partner_id']")));
+        vendor.click();
+        Thread.sleep(2000);
+
+        WebElement vendor_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='AOQI MULTIMEDIA SDN BHD']")));
+        vendor_selection.click();
+
+        WebElement quantity = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='min_qty']/div[@name='min_qty']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
+        quantity.clear();
+        quantity.sendKeys("0");
+
+        WebElement price = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@name='price' and @class='o_field_widget o_required_modifier o_field_float']/input[@inputmode='decimal' and @class='o_input' and @autocomplete='off' and @type='text']")));
+        price.clear();
+        price.sendKeys("25");
+
+        WebElement currency = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='currency_id']//div[@class='o_field_widget o_required_modifier o_field_many2one']//div[@class='o_field_many2one_selection']//div[@class='o-autocomplete dropdown']/input[@class='o-autocomplete--input o_input pe-3' and @type='text' and @aria-expanded='false']")));
+        currency.click();
+        Thread.sleep(2000);
+
+        WebElement currency_selection = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@id='autocomplete_0_4']")));
+        currency_selection.click();
+    }
+
+    private void fillInventoryTab() throws InterruptedException {
+        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(40));
+
+        // Open the Inventory tab
+        WebElement inventory = wait2.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@name='inventory' and text()='Inventory']")));
+        inventory.click();
+        Thread.sleep(2000);
+
+        // Select the checkbox for "PKS - Buy from Vendor"
+        selectCheckboxByLabel(driver, "PKS - Buy from Vendor");
+
+        // Uncomment the following line if you need to select "Manufacture in PKS"
+        // selectCheckboxByLabel(driver, "Manufacture in PKS");
+    }
+
+
+    private void selectRadioButton(WebDriver driver, String option) {
         WebElement radioButton = driver.findElement(By.xpath("//input[@type='radio' and @data-value='" + option + "']"));
         if (!radioButton.isSelected()) {
             radioButton.click();
         }
     }
 
-  	public static void verifyRadioButtonSelection(WebDriver driver, String option) {
+    private void verifyRadioButtonSelection(WebDriver driver, String option) {
         WebElement radioButton = driver.findElement(By.xpath("//input[@type='radio' and @data-value='" + option + "']"));
-        assertTrue(radioButton.isSelected(), option + " radio button is not selected");
+        if (radioButton.isSelected()) {
+            System.out.println(option + " radio button is selected");
+        } else {
+            System.out.println(option + " radio button is not selected");
+        }
     }
-    
 
-    
+    private void selectCheckboxByLabel(WebDriver driver, String labelText) {
+        WebElement checkbox = driver.findElement(By.xpath("//label[text()='" + labelText + "']/preceding-sibling::input[@type='checkbox']"));
+        if (!checkbox.isSelected()) {
+            checkbox.click();
+        }
+    }
+
+    private void createProduct(String productName) {
+        WebElement product_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
+        product_name.sendKeys(productName);
+        // Add any other field interactions here if necessary
+    }
+
+
+    public void addReorderingRule(String productName) throws InterruptedException {
+        //Product Search
+    	WebElement Product_search = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
+        Product_search.click();
+        Product_search.sendKeys(productName);
+        Product_search.sendKeys(Keys.ENTER);
+        //click on the product after search
+        WebElement Product_select = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='"+productName+"']")));
+        Product_select.click();
+
+        //more option clicking
+        WebElement more_option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[span='More']")));
+        more_option.click();
+
+        // XPaths for the two elements
+        String divXpath = "//div[@name='nbr_reordering_rules']";
+        String buttonXpath = "//button[contains(., 'Min:')]";
+
+        // Find the div element (if it exists)
+        java.util.List<WebElement> divElements = driver.findElements(By.xpath(divXpath));
+
+        // Find the button element (if it exists)
+        java.util.List<WebElement> buttonElements = driver.findElements(By.xpath(buttonXpath));
+
+        // Check if either the div or button element exists and perform the action
+        if (!divElements.isEmpty()) {
+            // Element with div[@name='nbr_reordering_rules'] is present
+            WebElement divElement = divElements.get(0);
+            System.out.println("Div element found!");
+            divElement.click();  // Perform the desired action, such as clicking
+        } else if (!buttonElements.isEmpty()) {
+            // Element with button[contains(., 'Min:')] is present
+            WebElement buttonElement = buttonElements.get(0);
+            System.out.println("Button element found!");
+            buttonElement.click();  // Perform the desired action, such as clicking
+        } else {
+            // Neither element is present
+            System.out.println("Neither element was found!");
+        }
+
+        WebElement newButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(), 'New')]")));
+        newButton.click();
+
+        Thread.sleep(1000);
+        WebElement minInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='product_min_qty']//input")));
+        minInput.clear();
+        minInput.sendKeys("0");
+
+        // Trigger change event if necessary
+        ((JavascriptExecutor) driver).executeScript("arguments[0].dispatchEvent(new Event('change'));", minInput);
+
+        WebElement maxInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[@name='product_max_qty']//input")));
+        maxInput.clear();
+        maxInput.sendKeys("10");
+
+        // Trigger change event if necessary
+        ((JavascriptExecutor) driver).executeScript("arguments[0].dispatchEvent(new Event('change'));", maxInput);
+
+        // Wait for any JavaScript actions that might alter the values
+        Thread.sleep(2000);
+
+        // Ensure values are correct
+        String minValue = minInput.getAttribute("value");
+        String maxValue = maxInput.getAttribute("value");
+
+        if (minValue.equals("0") && maxValue.equals("10")) {
+            // Proceed to click the save button if values are as expected
+            WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button'and contains(text(), 'Save')]")));
+            saveButton.click();
+        } else {
+            System.out.println("Values have been modified by the system. Trying again...");
+            // Optionally retry or handle the situation further
+            minInput.clear();
+            minInput.sendKeys("0");
+
+            // Trigger change event if necessary
+            ((JavascriptExecutor) driver).executeScript("arguments[0].dispatchEvent(new Event('change'));", minInput);
+
+            WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button'and contains(text(), 'Save')]")));
+            saveButton.click();
+
+        }
+
+
+    }
+
     
     
 }

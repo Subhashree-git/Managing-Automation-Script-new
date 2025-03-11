@@ -83,23 +83,20 @@ public class Product_Creation {
        // System.out.println(save_product);
         save_product.click();
         
-        // Wait for the save button to become disabled indicating save has happened
-        wait.until(ExpectedConditions.attributeToBe(By.xpath("//button[@aria-label='Save manually']"), "disabled", "true"));
+        Thread.sleep(2000);
+     // Wait for the log note to be present (the log note with the product creation message)
+        WebElement logNoteElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='o-mail-Message-body text-break mb-0 w-100 o-note']//p")));
 
-        Thread.sleep(3000);
-        //Assertion: Product name is the same as what is provided.
-        WebElement productNameAfterSave = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@name='name']//textarea")));
-        String test=productNameAfterSave.getText();
-        System.out.println(test);
-     //   Assert.assertEquals(productNameAfterSave.getText(), productName, "Product name is not displayed correctly after saving");
-        
-        
-        
-        
+        // Get the text from the log note element
+        String logNoteText = logNoteElement.getText();
+
+       // Assertion: Ensure the log note text is correct
+        Assert.assertEquals(logNoteText, "Product created", "The log note does not display the expected text.");
+
     }
 
-    @AfterClass
- /*   public void tearDown() {
+ /*   @AfterClass
+    public void tearDown() {
         // Close the driver after all tests are done
         if (driver != null) {
             driver.quit();
@@ -179,7 +176,7 @@ public class Product_Creation {
         productCategory_selection.click();
 
         WebElement reference = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='default_code_0']")));
-        reference.sendKeys("Scenario1_test product35");
+        reference.sendKeys("Scenario0_test product");
 
         WebElement description = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='x_studio_field_mHzKJ_0']")));
         description.sendKeys("Test Product Description");
@@ -272,7 +269,7 @@ public class Product_Creation {
 	
     private String createProduct() {
         WebElement product_name = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//textarea[@id='name_0']")));
-        String productName = "Scenario1_test product";
+        String productName = "Scenario0_test product";
         product_name.sendKeys(productName);
         return productName;
 

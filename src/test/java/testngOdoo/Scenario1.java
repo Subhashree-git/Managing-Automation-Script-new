@@ -19,7 +19,7 @@ public class Scenario1 {
 	
 	  private WebDriver driver;
 	    private WebDriverWait wait;
-	    private String saleOrderProductName = "Product1#23";
+	    private String saleOrderProductName = "Scenario1_test product";
 	    private String salesOrderId;
 
 	    @BeforeClass
@@ -111,7 +111,7 @@ public class Scenario1 {
 	                .xpath("//input[@inputmode='numeric' and @class='o_input' and @autocomplete='off' and @type='text']")));
 	        fill_POSITION.sendKeys("1");
 	        
-	        System.out.println("Sale Order Product " + saleOrderProductName);
+	        System.out.println("Sale Order Product: " + saleOrderProductName);
 
 	        WebElement fill_PeckoPartNumber = wait1.until(ExpectedConditions.elementToBeClickable(By.xpath(
 	                "(//input[@type='text' and @class='o-autocomplete--input o_input pe-3' and @autocomplete='off' and @role='combobox' and @aria-autocomplete='list' and @aria-haspopup='listbox' and @aria-expanded='false'])[8]")));
@@ -243,19 +243,19 @@ public class Scenario1 {
 	        // Iterate through each <tr> to extract product details
 	        for (WebElement row : rows) {
 	            // Find the <td> element with the name 'product_id' to get the product name
-	            WebElement productTd = row.findElement(By.xpath("//td[@name='customer_part_no']"));
+	            WebElement productTd = row.findElement(By.xpath(".//td[@name='customer_part_no']"));
 	            String PO_Product = productTd.getText().trim();
 
 	            // Find the <td> element with the name 'product_qty' to get the quantity
-	            WebElement qtyTd = row.findElement(By.xpath("//td[@name='product_qty']"));
+	            WebElement qtyTd = row.findElement(By.xpath(".//td[@name='product_qty']"));
 	            PO_QuantityText = qtyTd.getText().trim();
 
 	            // Find the <td> element with the name 'price_unit' to get the price
-	            WebElement priceTd = row.findElement(By.xpath("//td[@name='price_unit']"));
+	            WebElement priceTd = row.findElement(By.xpath(".//td[@name='price_unit']"));
 	            String PO_Price = priceTd.getText().trim();
 
 	            // Find the <td> element with the name 'price_subtotal' to get the subtotal
-	            WebElement subtotalTd = row.findElement(By.xpath("//td[@name='price_subtotal']"));
+	            WebElement subtotalTd = row.findElement(By.xpath(".//td[@name='price_subtotal']"));
 	            String PO_Subtotal = subtotalTd.getText().trim();
 
 	            // Output the product details
@@ -267,10 +267,11 @@ public class Scenario1 {
 	                // Store the quantity for this specific product
 	                String specificProductQty = PO_QuantityText;
 	                System.out.println("Specific Product: " + PO_Product + ", Specific Quantity: " + specificProductQty);
+	                System.out.println("Product matches the sale order product name.");
 	            } else {
 	                System.out.println("Product does not match the sale order product name.");
 	            
-	            }
+	            }         
 	            
 	        }
 	        
@@ -302,13 +303,13 @@ public class Scenario1 {
 	    }
 
 
-		@AfterClass
+	/*	@AfterClass
 	    public void tearDown() {
 	        if (driver != null) {
 	            driver.quit();
 	        }
 	    }
-		
+*/		
 		public static double calculatePOQuantity(double onHandQty, double maxQty, double salesOrderQty) {
 	        double poQty = 0.0;
 
@@ -318,7 +319,7 @@ public class Scenario1 {
 	        if (availableStockAfterSO <= 0) {
 	            // If available stock after considering SO is <= 0, create PO
 	            poQty = maxQty - availableStockAfterSO;
-	            System.out.println("PO Quantity calculated: " + poQty);
+	           
 	        } else {
 	            // If available stock after considering SO is positive, no PO needed
 	            poQty = 0;
@@ -349,11 +350,11 @@ public class Scenario1 {
 			WebElement Product_search = wait
 					.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Search...']")));
 			Product_search.click();
-			Product_search.sendKeys("Product1#23");
+			Product_search.sendKeys("Scenario0_test product");
 			Product_search.sendKeys(Keys.ENTER);
 
 			WebElement Product_select = wait.until(ExpectedConditions
-					.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='Product1#23']")));
+					.elementToBeClickable(By.xpath("//div[@class='o_content']//span[text()='Scenario0_test product']")));
 			Product_select.click();
 			// Get and print Available Quantity
 			WebElement qtyAvailableElement = wait
@@ -405,8 +406,4 @@ public class Scenario1 {
 		}
 		
 	
-	
-	
-	
-
 }
